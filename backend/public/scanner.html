@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Expirova - Smart Barcode Scanner & Inventory</title>
+  
+  <!-- Modern Typography & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            brand: {
+              50: '#f0f7fc',
+              100: '#e0eff9',
+              500: '#0d5f94',
+              600: '#0b527f',
+              700: '#084063',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- html5-qrcode Library -->
+  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+
+  <style>
+    @keyframes scanLaser {
+      0% { top: 4%; opacity: 0.2; }
+      50% { opacity: 1; }
+      100% { top: 92%; opacity: 0.2; }
+    }
+    .laser-line {
+      position: absolute;
+      left: 6%;
+      right: 6%;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, #22d3ee, #38bdf8, transparent);
+      box-shadow: 0 0 15px #38bdf8;
+      animation: scanLaser 2.2s ease-in-out infinite alternate;
+    }
+    #reader video {
+      border-radius: 1rem;
+      object-fit: cover !important;
+      width: 100% !important;
+    }
+  </style>
+</head>
+
+<body class="bg-[#f8fafc] text-slate-800 font-sans min-h-screen flex flex-col antialiased selection:bg-brand-500 selection:text-white">
+
+  <!-- ================= TOP NAVIGATION / AUTH BAR ================= -->
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-xs">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-brand-500 text-white flex items-center justify-center shadow-md shadow-brand-500/20">
+          <span class="material-symbols-outlined text-[24px]">qr_code_scanner</span>
+        </div>
+        <div>
+          <span class="font-extrabold text-lg text-slate-900 tracking-tight">Expirova</span>
+          <span class="hidden sm:inline-block text-xs font-semibold px-2 py-0.5 rounded bg-brand-50 text-brand-600 border border-brand-100 ml-2">Smart Inventory</span>
+        </div>
+      </div>
+
+      <!-- Auth State Display -->
+      <div id="authContainer" class="flex items-center gap-3">
+        <!-- Rendered via JavaScript -->
+      </div>
+    </div>
+  </header>
+
+  <!-- ================= MAIN CONTENT CONTAINER ================= -->
+  <main class="max-w-6xl mx-auto px-4 sm:px-6 py-8 flex-1 w-full">
+    
+    <!-- Hero / Description -->
+    <div class="text-center max-w-2xl mx-auto mb-8">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-50 border border-brand-200 text-brand-600 text-xs font-semibold mb-3">
+        <span class="material-symbols-outlined text-[16px]">verified</span>
+        Live Barcode OCR & Automated Expiration Daemon
+      </div>
+      <h1 class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
+        Smart Barcode Scanner
+      </h1>
+      <p class="mt-2 text-slate-600 text-sm sm:text-base">
+        Scan packaging barcodes, auto-retrieve product metadata via Open Food Facts, and receive automated email alerts before expiration.
+      </p>
+    </div>
+
+    <!-- Notification Banner -->
+    <div id="alertBanner" class="hidden max-w-3xl mx-auto mb-6 p-4 rounded-xl border text-sm flex items-start gap-3 transition-all duration-300">
+      <span id="alertIcon" class="material-symbols-outlined text-[20px] shrink-0 mt-0.5"></span>
+      <div class="flex-1">
+        <p id="alertTitle" class="font-bold"></p>
+        <p id="alertMessage" class="text-xs mt-0.5"></p>
+      </div>
+      <button onclick="hideAlert()" class="text-slate-400 hover:text-slate-600">
+        <span class="material-symbols-outlined text-[18px]">close</span>
+      </button>
+    </div>
+
+    <!-- Main Grid: Scanner Left | Product Card Right -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      
+      <!-- ================= LEFT COLUMN: 3 SCANNING MODES ================= -->
+      <div class="lg:col-span-7 space-y-6">
+        
+        <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+          
+          <!-- Mode Tabs -->
+          <div class="flex rounded-xl bg-slate-100 p-1 mb-6 border border-slate-200">
+            <button id="tabCamera" onclick="switchMode('camera')" class="flex-1 py-2 px-3 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1.5 bg-white text-brand-600 shadow-xs">
+              <span class="material-symbols-outlined text-[18px]">photo_camera</span>
+              Live Camera
+            </button>
+            <button id="tabFile" onclick="switchMode('file')" class="flex-1 py-2 px-3 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1.5 text-slate-600 hover:text-slate-900">
+              <span class="material-symbols-outlined text-[18px]">upload_file</span>
+              Photo Upload
+            </button>
+            <button id="tabManual" onclick="switchMode('manual')" class="flex-1 py-2 px-3 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1.5 text-slate-600 hover:text-slate-900">
+              <span class="material-symbols-outlined text-[18px]">keyboard</span>
+              Manual Code
+            </button>
+          </div>
+
+          <!-- 1. LIVE CAMERA SCANNER -->
+          <div id="modeCamera" class="space-y-4">
+            <div class="relative bg-slate-950 rounded-2xl overflow-hidden aspect-[4/3] flex items-center justify-center border border-slate-800">
+              <div id="reader" class="w-full h-full"></div>
+              
+              <!-- Placeholder when camera idle -->
+              <div id="cameraPlaceholder" class="absolute inset-0 flex flex-col items-center justify-center text-center p-6 bg-slate-900/90 text-white">
+                <div class="w-16 h-16 rounded-full bg-slate-800 flex items-center justify-center mb-3 text-cyan-400">
+                  <span class="material-symbols-outlined text-[36px]">barcode_scanner</span>
+                </div>
+                <h3 class="font-bold text-base">Camera Scanner Idle</h3>
+                <p class="text-xs text-slate-400 max-w-xs mt-1 mb-4">
+                  Position any UPC/EAN retail barcode within frame to scan instantly.
+                </p>
+                <button onclick="startCameraScanner()" class="bg-brand-500 hover:bg-brand-600 active:scale-95 text-white font-semibold text-xs px-5 py-2.5 rounded-xl shadow-md transition flex items-center gap-2">
+                  <span class="material-symbols-outlined text-[18px]">videocam</span>
+                  Start Camera Scanner
+                </button>
+              </div>
+
+              <!-- Viewfinder Overlay while active -->
+              <div id="viewfinderOverlay" class="hidden absolute inset-0 pointer-events-none flex flex-col justify-between p-4">
+                <div class="flex justify-between items-center">
+                  <span class="bg-black/60 backdrop-blur-md text-emerald-400 text-xs px-3 py-1 rounded-full flex items-center gap-1.5 font-mono">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                    SCANNING ACTIVE
+                  </span>
+                  <button onclick="stopCameraScanner()" class="pointer-events-auto bg-black/60 hover:bg-black/80 backdrop-blur-md text-white text-xs px-3 py-1 rounded-full flex items-center gap-1">
+                    <span class="material-symbols-outlined text-[14px]">close</span>
+                    Stop
+                  </button>
+                </div>
+                <div class="relative self-center w-64 h-36 border-2 border-dashed border-cyan-400 rounded-xl flex items-center justify-center">
+                  <div class="laser-line"></div>
+                  <span class="text-[10px] font-mono text-cyan-200 bg-black/60 px-2 py-0.5 rounded backdrop-blur-xs">ALIGN BARCODE</span>
+                </div>
+                <div class="text-center">
+                  <span class="text-[11px] text-slate-300 bg-black/50 px-3 py-1 rounded-full backdrop-blur-xs">Keep label steady under good lighting</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. FILE UPLOAD SCANNER -->
+          <div id="modeFile" class="hidden space-y-4">
+            <div class="border-2 border-dashed border-slate-300 hover:border-brand-500 rounded-2xl p-8 text-center transition bg-slate-50/50 cursor-pointer" onclick="document.getElementById('barcodeFileInput').click()">
+              <input type="file" id="barcodeFileInput" accept="image/*" class="hidden" onchange="handleBarcodeFileUpload(this)" />
+              <div class="w-16 h-16 rounded-full bg-brand-50 text-brand-600 flex items-center justify-center mx-auto mb-3">
+                <span class="material-symbols-outlined text-[32px]">cloud_upload</span>
+              </div>
+              <h3 class="font-bold text-slate-800 text-sm">Upload Package Image</h3>
+              <p class="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
+                Select a high-resolution photo of the product barcode from your computer or phone gallery.
+              </p>
+              <button type="button" class="mt-4 px-4 py-2 bg-white border border-slate-300 hover:bg-slate-100 text-slate-700 text-xs font-semibold rounded-xl shadow-xs">
+                Select Photo File
+              </button>
+            </div>
+            <div id="fileUploadLoading" class="hidden text-center py-4 text-xs font-medium text-slate-600 flex items-center justify-center gap-2">
+              <span class="material-symbols-outlined animate-spin text-brand-500 text-[18px]">progress_activity</span>
+              Analyzing image for barcode data...
+            </div>
+          </div>
+
+          <!-- 3. FALLBACK MANUAL ENTRY -->
+          <div id="modeManual" class="hidden space-y-4">
+            <label class="block text-xs font-bold text-slate-700">Enter Barcode / UPC / EAN Number</label>
+            <div class="flex gap-2">
+              <input type="text" id="manualBarcodeInput" placeholder="e.g. 737628064502 or 3017620422003" class="flex-1 px-4 py-2.5 border border-slate-300 rounded-xl text-sm font-mono focus:ring-2 focus:ring-brand-500 focus:outline-none" />
+              <button onclick="handleManualBarcodeLookup()" class="bg-brand-500 hover:bg-brand-600 text-white text-xs font-bold px-5 py-2.5 rounded-xl shadow-xs flex items-center gap-1.5 transition">
+                <span class="material-symbols-outlined text-[18px]">search</span>
+                Lookup
+              </button>
+            </div>
+            <div class="flex flex-wrap gap-2 items-center text-xs text-slate-500 mt-2">
+              <span>Quick Test Barcodes:</span>
+              <button onclick="quickTestBarcode('737628064502')" class="text-brand-600 hover:underline font-mono bg-brand-50 px-2 py-0.5 rounded border border-brand-200">737628064502 (Thai Noodles)</button>
+              <button onclick="quickTestBarcode('3017620422003')" class="text-brand-600 hover:underline font-mono bg-brand-50 px-2 py-0.5 rounded border border-brand-200">3017620422003 (Nutella)</button>
+              <button onclick="quickTestBarcode('8901030865421')" class="text-brand-600 hover:underline font-mono bg-brand-50 px-2 py-0.5 rounded border border-brand-200">8901030865421 (Medicine)</button>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- ================= RIGHT COLUMN: PRODUCT PREVIEW & INVENTORY FORM ================= -->
+      <div class="lg:col-span-5">
+        <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm sticky top-24">
+          
+          <div class="flex items-center justify-between pb-4 border-b border-slate-100 mb-5">
+            <h2 class="text-base font-bold text-slate-900 flex items-center gap-2">
+              <span class="material-symbols-outlined text-brand-500">inventory_2</span>
+              Product Preview & Registration
+            </h2>
+            <span id="lookupStatusBadge" class="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-600">
+              Awaiting Scan
+            </span>
+          </div>
+
+          <!-- Loading State for Open Food Facts -->
+          <div id="productLoading" class="hidden py-12 text-center">
+            <div class="w-12 h-12 rounded-full border-4 border-brand-100 border-t-brand-500 animate-spin mx-auto mb-3"></div>
+            <p class="text-sm font-semibold text-slate-800">Querying Open Food Facts API...</p>
+            <p class="text-xs text-slate-500 mt-1">Retrieving product name, category, and nutritional metadata</p>
+          </div>
+
+          <!-- Empty Initial State Placeholder -->
+          <div id="productEmptyPlaceholder" class="py-12 text-center text-slate-400">
+            <span class="material-symbols-outlined text-[48px] text-slate-300 mb-2">qr_code_2</span>
+            <p class="text-sm font-semibold text-slate-600">No Product Scanned Yet</p>
+            <p class="text-xs text-slate-400 max-w-xs mx-auto mt-1">
+              Scan a barcode with your camera, upload an image, or enter a number on the left to reveal details.
+            </p>
+          </div>
+
+          <!-- Revealed Product Preview Card & Date Pickers -->
+          <form id="inventoryForm" onsubmit="handleAddToInventory(event)" class="hidden space-y-4">
+            
+            <!-- Thumbnail & Main Info Header -->
+            <div class="flex gap-4 p-3 bg-slate-50 rounded-xl border border-slate-200/80 items-center">
+              <div id="productThumbContainer" class="w-16 h-16 rounded-lg bg-white border border-slate-200 flex items-center justify-center shrink-0 overflow-hidden">
+                <span id="productIcon" class="material-symbols-outlined text-brand-500 text-[28px]">medication</span>
+                <img id="productImg" src="" alt="Thumbnail" class="hidden w-full h-full object-cover" />
+              </div>
+              <div class="flex-1 min-w-0">
+                <span id="productCategoryBadge" class="text-[10px] font-bold uppercase tracking-wider text-brand-600 bg-brand-50 border border-brand-200 px-2 py-0.5 rounded">
+                  Category
+                </span>
+                <h3 id="productTitleDisplay" class="font-extrabold text-sm text-slate-900 truncate mt-1">Product Title</h3>
+                <p id="productBarcodeDisplay" class="text-xs font-mono text-slate-500">Barcode: -</p>
+              </div>
+            </div>
+
+            <!-- Editable Fields -->
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">Product Name</label>
+              <input type="text" id="formProductName" required class="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-brand-500 focus:outline-none" />
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">Category</label>
+                <select id="formProductCategory" onchange="handleCategoryChange(this.value)" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                  <option value="Medicine">Medicine</option>
+                  <option value="Vaccine">Vaccine</option>
+                  <option value="IV Fluid">IV Fluid</option>
+                  <option value="Food & Dairy">Food & Dairy</option>
+                  <option value="Medical Supply">Medical Supply</option>
+                  <option value="General Goods">General Goods</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">Barcode</label>
+                <input type="text" id="formProductBarcode" readonly class="w-full px-3 py-2 bg-slate-100 border border-slate-300 rounded-xl text-xs font-mono text-slate-600" />
+              </div>
+            </div>
+
+            <!-- Storage Location with dynamic preset/manual toggle -->
+            <div>
+              <div class="flex justify-between items-center mb-1">
+                <label class="block text-xs font-bold text-slate-700">Storage Location</label>
+                <span id="locationTypeBadge" class="text-[10px] text-slate-500 font-mono">Preset Shelf</span>
+              </div>
+              <div id="locationPresetWrapper">
+                <select id="formLocationPreset" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                  <option value="Pharmacy Shelf G-2">Pharmacy Shelf G-2</option>
+                  <option value="Rack A-3">Rack A-3</option>
+                  <option value="Cold Chain Lab 1">Cold Chain Lab 1</option>
+                  <option value="ER Supply Bay">ER Supply Bay</option>
+                  <option value="Dispensary Drawer 4">Dispensary Drawer 4</option>
+                  <option value="Emergency Cart 1">Emergency Cart 1</option>
+                </select>
+              </div>
+              <div id="locationManualWrapper" class="hidden">
+                <input type="text" id="formLocationManual" placeholder="Enter location manually (e.g. Unit 4 Fridge, Pantry Box)" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-brand-500 focus:outline-none" />
+              </div>
+            </div>
+
+            <!-- Revealed Manufacturing & Expiry Date-Time Pickers -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1 flex items-center gap-1">
+                  <span class="material-symbols-outlined text-[15px] text-slate-500">event_available</span>
+                  Manufacturing Date
+                </label>
+                <input type="datetime-local" id="formMfgDate" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-brand-500 focus:outline-none" />
+              </div>
+
+              <div>
+                <label class="block text-xs font-bold text-red-600 mb-1 flex items-center gap-1">
+                  <span class="material-symbols-outlined text-[15px] text-red-600">event_busy</span>
+                  Expiry Date & Time *
+                </label>
+                <input type="datetime-local" id="formExpiryDate" required class="w-full px-3 py-2 border-2 border-red-300 rounded-xl text-xs font-semibold text-slate-900 focus:ring-2 focus:ring-red-500 focus:outline-none" />
+              </div>
+            </div>
+
+            <!-- Automation Daemon Rule Info Box -->
+            <div class="p-3 bg-amber-50/80 border border-amber-200 rounded-xl text-[11px] text-amber-900 flex items-start gap-2">
+              <span class="material-symbols-outlined text-[16px] text-amber-600 shrink-0 mt-0.5">notifications_active</span>
+              <div>
+                <p class="font-bold">Automated Daemon Monitoring:</p>
+                <ul class="list-disc list-inside mt-0.5 space-y-0.5 text-amber-800">
+                  <li><strong>Rule 1:</strong> 1-Day Prior (23-24h) single warning email.</li>
+                  <li><strong>Rule 2:</strong> Expiry day recurring emergency alerts every 3 hours.</li>
+                </ul>
+              </div>
+            </div>
+
+            <!-- Add to Inventory Button -->
+            <button type="submit" id="submitBtn" class="w-full py-3 px-4 bg-brand-500 hover:bg-brand-600 active:scale-[0.99] text-white font-bold text-sm rounded-xl shadow-md shadow-brand-500/25 flex items-center justify-center gap-2 transition">
+              <span class="material-symbols-outlined text-[18px]">add_circle</span>
+              Add to My Inventory
+            </button>
+          </form>
+
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ================= CURRENT USER INVENTORY LOG ================= -->
+    <section class="mt-12 bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+        <div>
+          <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2">
+            <span class="material-symbols-outlined text-brand-500">list_alt</span>
+            My Monitored Products
+          </h2>
+          <p class="text-xs text-slate-500">Products saved in your relational database session</p>
+        </div>
+        <button onclick="loadUserInventory()" class="text-xs font-bold text-brand-600 hover:text-brand-700 bg-brand-50 px-3 py-1.5 rounded-lg border border-brand-200 flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-[16px]">refresh</span>
+          Refresh List
+        </button>
+      </div>
+
+      <div id="inventoryListContainer" class="overflow-x-auto">
+        <p class="text-xs text-slate-400 py-6 text-center">Loading inventory records...</p>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ================= AUTH MODAL (LOGIN / REGISTER) ================= -->
+  <div id="authModal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl border border-slate-200 relative animate-in fade-in zoom-in-95 duration-200">
+      <button onclick="closeAuthModal()" class="absolute top-5 right-5 text-slate-400 hover:text-slate-600">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+
+      <div class="text-center mb-6">
+        <div class="w-12 h-12 rounded-2xl bg-brand-50 text-brand-600 flex items-center justify-center mx-auto mb-3 shadow-sm">
+          <span class="material-symbols-outlined text-[28px]">lock</span>
+        </div>
+        <h3 id="authModalTitle" class="text-xl font-extrabold text-slate-900">Sign In to Expirova</h3>
+        <p class="text-xs text-slate-500 mt-1">Manage user session & automated email alert dispatch</p>
+      </div>
+
+      <form onsubmit="handleAuthSubmit(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Email Address</label>
+          <input type="email" id="authEmail" required placeholder="user@example.com" class="w-full px-3 py-2.5 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none" />
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Password</label>
+          <input type="password" id="authPassword" required placeholder="••••••••" class="w-full px-3 py-2.5 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none" />
+        </div>
+
+        <button type="submit" id="authSubmitBtn" class="w-full py-3 bg-brand-500 hover:bg-brand-600 text-white font-bold text-sm rounded-xl shadow-md transition">
+          Sign In
+        </button>
+
+        <div class="text-center pt-2">
+          <button type="button" onclick="toggleAuthMode()" id="authToggleBtn" class="text-xs font-semibold text-brand-600 hover:underline">
+            Don't have an account? Register here
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ================= JAVASCRIPT APPLICATION LOGIC ================= -->
+  <script>
+    const API_BASE = window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1')
+      ? '' 
+      : 'http://localhost:5000';
+
+    // State Variables
+    let currentUser = null;
+    let currentToken = localStorage.getItem('expirova_token') || null;
+    let html5QrScanner = null;
+    let authMode = 'login'; // 'login' | 'register'
+    let currentScannedProduct = null;
+
+    // Initialize Default Dates
+    const initDefaultDates = () => {
+      const now = new Date();
+      const mfgIso = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+      document.getElementById('formMfgDate').value = mfgIso;
+
+      // Default Expiry 7 days ahead
+      const expiryDate = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+      const expiryIso = new Date(expiryDate.getTime() - expiryDate.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+      document.getElementById('formExpiryDate').value = expiryIso;
+    };
+
+    // ================= 1. USER SESSION MANAGEMENT =================
+    const checkUserSession = async () => {
+      const container = document.getElementById('authContainer');
+      if (!currentToken) {
+        container.innerHTML = `
+          <button onclick="openAuthModal('login')" class="text-xs font-bold text-slate-700 hover:text-brand-600 px-3 py-2 rounded-lg transition">Sign In</button>
+          <button onclick="openAuthModal('register')" class="text-xs font-bold bg-brand-500 hover:bg-brand-600 text-white px-4 py-2 rounded-xl shadow-xs transition">Create Account</button>
+        `;
+        currentUser = null;
+        loadUserInventory();
+        return;
+      }
+
+      try {
+        const res = await fetch(`${API_BASE}/api/auth/me`, {
+          headers: { 'Authorization': `Bearer ${currentToken}` }
+        });
+        const data = await res.json();
+        if (data.success && data.user) {
+          currentUser = data.user;
+          container.innerHTML = `
+            <div class="flex items-center gap-2">
+              <span class="w-8 h-8 rounded-full bg-brand-50 border border-brand-200 text-brand-600 flex items-center justify-center text-xs font-bold">
+                ${currentUser.email.slice(0, 2).toUpperCase()}
+              </span>
+              <div class="hidden sm:block text-left">
+                <p class="text-xs font-bold text-slate-900 leading-none truncate max-w-[150px]">${currentUser.email}</p>
+                <p class="text-[10px] text-slate-500 leading-tight">Session Active</p>
+              </div>
+              <button onclick="handleLogout()" title="Logout" class="text-slate-400 hover:text-red-600 p-1 rounded transition ml-1">
+                <span class="material-symbols-outlined text-[18px]">logout</span>
+              </button>
+            </div>
+          `;
+          loadUserInventory();
+        } else {
+          handleLogout();
+        }
+      } catch (e) {
+        console.warn('Session check failed:', e);
+      }
+    };
+
+    const openAuthModal = (mode = 'login') => {
+      authMode = mode;
+      document.getElementById('authModalTitle').textContent = mode === 'login' ? 'Sign In to Expirova' : 'Create an Account';
+      document.getElementById('authSubmitBtn').textContent = mode === 'login' ? 'Sign In' : 'Register Account';
+      document.getElementById('authToggleBtn').textContent = mode === 'login' 
+        ? "Don't have an account? Register here" 
+        : 'Already have an account? Sign in here';
+      document.getElementById('authModal').classList.remove('hidden');
+    };
+
+    const closeAuthModal = () => {
+      document.getElementById('authModal').classList.add('hidden');
+    };
+
+    const toggleAuthMode = () => {
+      openAuthModal(authMode === 'login' ? 'register' : 'login');
+    };
+
+    const handleAuthSubmit = async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('authEmail').value.trim();
+      const password = document.getElementById('authPassword').value;
+
+      try {
+        const endpoint = authMode === 'login' ? '/api/auth/login' : '/api/auth/register';
+        const res = await fetch(`${API_BASE}${endpoint}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+        const data = await res.json();
+
+        if (data.success && data.token) {
+          localStorage.setItem('expirova_token', data.token);
+          currentToken = data.token;
+          currentUser = data.user;
+          closeAuthModal();
+          showAlert('success', 'Authentication Successful', `Logged in as ${data.user.email}`);
+          checkUserSession();
+        } else {
+          showAlert('error', 'Authentication Failed', data.message || 'Please check credentials.');
+        }
+      } catch (err) {
+        showAlert('error', 'Network Error', err.message);
+      }
+    };
+
+    const handleLogout = () => {
+      localStorage.removeItem('expirova_token');
+      currentToken = null;
+      currentUser = null;
+      checkUserSession();
+      showAlert('info', 'Logged Out', 'You have been logged out of your session.');
+    };
+
+    // ================= 2. SCANNING MODE SWITCHER =================
+    const switchMode = (mode) => {
+      ['camera', 'file', 'manual'].forEach((m) => {
+        const cap = m.charAt(0).toUpperCase() + m.slice(1);
+        const tab = document.getElementById(`tab${cap}`);
+        const sec = document.getElementById(`mode${cap}`);
+        if (m === mode) {
+          tab.className = 'flex-1 py-2 px-3 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1.5 bg-white text-brand-600 shadow-xs';
+          sec.classList.remove('hidden');
+        } else {
+          tab.className = 'flex-1 py-2 px-3 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1.5 text-slate-600 hover:text-slate-900';
+          sec.classList.add('hidden');
+        }
+      });
+
+      if (mode !== 'camera' && html5QrScanner) {
+        stopCameraScanner();
+      }
+    };
+
+    // ================= 3. LIVE CAMERA SCANNING (html5-qrcode) =================
+    const startCameraScanner = async () => {
+      document.getElementById('cameraPlaceholder').classList.add('hidden');
+      document.getElementById('viewfinderOverlay').classList.remove('hidden');
+
+      if (!html5QrScanner) {
+        html5QrScanner = new Html5Qrcode("reader");
+      }
+
+      const config = {
+        fps: 10,
+        qrbox: { width: 250, height: 160 },
+        formatsToSupport: [
+          Html5QrcodeSupportedFormats.EAN_13,
+          Html5QrcodeSupportedFormats.EAN_8,
+          Html5QrcodeSupportedFormats.UPC_A,
+          Html5QrcodeSupportedFormats.UPC_E,
+          Html5QrcodeSupportedFormats.CODE_128,
+          Html5QrcodeSupportedFormats.QR_CODE
+        ]
+      };
+
+      try {
+        await html5QrScanner.start(
+          { facingMode: "environment" },
+          config,
+          (decodedText) => {
+            console.log("Barcode Detected:", decodedText);
+            stopCameraScanner();
+            processBarcode(decodedText);
+          },
+          (error) => {
+            // Ignore frame-by-frame non-detection
+          }
+        );
+      } catch (err) {
+        console.error("Camera scanner error:", err);
+        showAlert('error', 'Camera Error', 'Could not start camera feed. Please check browser permissions.');
+        stopCameraScanner();
+      }
+    };
+
+    const stopCameraScanner = async () => {
+      if (html5QrScanner && html5QrScanner.isScanning) {
+        try {
+          await html5QrScanner.stop();
+        } catch (e) {
+          console.log(e);
+        }
+      }
+      document.getElementById('cameraPlaceholder').classList.remove('hidden');
+      document.getElementById('viewfinderOverlay').classList.add('hidden');
+    };
+
+    // ================= 4. FILE UPLOAD SCANNING =================
+    const handleBarcodeFileUpload = async (input) => {
+      const file = input.files[0];
+      if (!file) return;
+
+      const loader = document.getElementById('fileUploadLoading');
+      loader.classList.remove('hidden');
+
+      try {
+        const scanner = new Html5Qrcode("reader");
+        const barcodeText = await scanner.scanFile(file, true);
+        loader.classList.add('hidden');
+        processBarcode(barcodeText);
+      } catch (err) {
+        loader.classList.add('hidden');
+        showAlert('warning', 'Barcode Not Detected', 'Could not detect a clear barcode from that image. Try a sharper image or use manual text entry.');
+      }
+    };
+
+    // ================= 5. MANUAL BARCODE LOOKUP =================
+    const handleManualBarcodeLookup = () => {
+      const code = document.getElementById('manualBarcodeInput').value.trim();
+      if (!code) {
+        showAlert('warning', 'Input Required', 'Please enter a barcode number.');
+        return;
+      }
+      processBarcode(code);
+    };
+
+    const quickTestBarcode = (code) => {
+      document.getElementById('manualBarcodeInput').value = code;
+      processBarcode(code);
+    };
+
+    // ================= 6. OPEN FOOD FACTS API QUERY & POPULATION =================
+    const processBarcode = async (barcode) => {
+      document.getElementById('lookupStatusBadge').textContent = 'Fetching Metadata...';
+      document.getElementById('lookupStatusBadge').className = 'text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-700 animate-pulse';
+      
+      document.getElementById('productEmptyPlaceholder').classList.add('hidden');
+      document.getElementById('inventoryForm').classList.add('hidden');
+      document.getElementById('productLoading').classList.remove('hidden');
+
+      let productDetails = {
+        barcode: barcode,
+        name: 'Item #' + barcode,
+        category: 'Grocery & Goods',
+        imageUrl: null
+      };
+
+      let wasFound = false;
+
+      try {
+        // Query backend proxy (configured with v2 endpoint & User-Agent: SmartInventoryApp/1.0)
+        let data = null;
+        try {
+          const proxyRes = await fetch(`${API_BASE}/api/lookup-barcode?code=${encodeURIComponent(barcode)}`);
+          if (proxyRes.ok) {
+            data = await proxyRes.json();
+          }
+        } catch (proxyErr) {
+          console.warn('Backend proxy lookup failed, attempting direct query:', proxyErr);
+        }
+
+        // Direct fallback query to Open Food Facts v2 endpoint
+        if (!data || !data.found) {
+          try {
+            const directRes = await fetch(`https://world.openfoodfacts.org/api/v2/product/${encodeURIComponent(barcode)}.json`, {
+              headers: { 'User-Agent': 'SmartInventoryApp/1.0' }
+            });
+            if (directRes.ok) {
+              const directJson = await directRes.json();
+              if (directJson.status === 1 && directJson.product) {
+                const p = directJson.product;
+                data = {
+                  found: true,
+                  name: p.product_name || p.product_name_en || p.generic_name || p.brands || null,
+                  category: (p.categories_tags && p.categories_tags.length > 0 
+                    ? p.categories_tags[0].replace(/^[a-z]{2}:/, '').replace(/-/g, ' ') 
+                    : p.categories) || 'General',
+                  imageUrl: p.image_front_small_url || p.image_url || null
+                };
+              }
+            }
+          } catch (directErr) {
+            console.warn('Direct Open Food Facts fetch failed:', directErr);
+          }
+        }
+
+        if (data && data.found) {
+          wasFound = true;
+          productDetails.name = data.name || productDetails.name;
+          productDetails.category = data.category || productDetails.category;
+          productDetails.imageUrl = data.imageUrl || null;
+        }
+      } catch (err) {
+        console.warn('Open Food Facts API error:', err);
+      }
+
+      currentScannedProduct = productDetails;
+      renderProductPreview(productDetails, wasFound);
+    };
+
+    const renderProductPreview = (p, wasFound = true) => {
+      document.getElementById('productLoading').classList.add('hidden');
+      document.getElementById('inventoryForm').classList.remove('hidden');
+
+      // Populate Header
+      document.getElementById('productTitleDisplay').textContent = p.name;
+      document.getElementById('productCategoryBadge').textContent = p.category;
+      document.getElementById('productBarcodeDisplay').textContent = `Barcode: ${p.barcode}`;
+
+      // Thumbnail
+      const img = document.getElementById('productImg');
+      const icon = document.getElementById('productIcon');
+      if (p.imageUrl) {
+        img.src = p.imageUrl;
+        img.classList.remove('hidden');
+        icon.classList.add('hidden');
+      } else {
+        img.classList.add('hidden');
+        icon.classList.remove('hidden');
+      }
+
+      // Category & Location switching
+      const catSelect = document.getElementById('formProductCategory');
+      let matchingOption = Array.from(catSelect.options).find(o => o.value.toLowerCase() === (p.category || '').toLowerCase());
+      if (matchingOption) {
+        catSelect.value = matchingOption.value;
+      } else {
+        catSelect.value = "General Goods";
+      }
+      handleCategoryChange(catSelect.value);
+
+      // Fill Inputs
+      document.getElementById('formProductName').value = p.name;
+      document.getElementById('formProductBarcode').value = p.barcode;
+
+      // Status Badge & Notice
+      if (wasFound) {
+        document.getElementById('lookupStatusBadge').textContent = 'Product Found';
+        document.getElementById('lookupStatusBadge').className = 'text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-700';
+        showAlert('success', 'Barcode Recognized', `Found "${p.name}". Set dates, category, and storage location to add to inventory.`);
+      } else {
+        document.getElementById('lookupStatusBadge').textContent = 'Manual Entry Ready';
+        document.getElementById('lookupStatusBadge').className = 'text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-700';
+        showAlert('info', 'Product Not in Public Database', `Barcode ${p.barcode} captured. Please enter the product name and category below.`);
+        document.getElementById('formProductName').focus();
+      }
+    };
+
+    const handleCategoryChange = (category) => {
+      const isMedicine = category === 'Medicine';
+      const presetWrapper = document.getElementById('locationPresetWrapper');
+      const manualWrapper = document.getElementById('locationManualWrapper');
+      const badge = document.getElementById('locationTypeBadge');
+
+      if (isMedicine) {
+        presetWrapper.classList.remove('hidden');
+        manualWrapper.classList.add('hidden');
+        badge.textContent = 'Preset Shelf';
+      } else {
+        presetWrapper.classList.add('hidden');
+        manualWrapper.classList.remove('hidden');
+        badge.textContent = 'Enter Manually';
+      }
+    };
+
+    // ================= 7. ADD TO INVENTORY ACTION =================
+    const handleAddToInventory = async (e) => {
+      e.preventDefault();
+
+      if (!currentToken) {
+        showAlert('warning', 'Sign In Required', 'Please sign in or register to attach products to your email and receive alerts.');
+        openAuthModal('login');
+        return;
+      }
+
+      const submitBtn = document.getElementById('submitBtn');
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = `
+        <span class="material-symbols-outlined text-[18px] animate-spin">progress_activity</span>
+        Saving & Dispatching Email...
+      `;
+
+      const selectedCategory = document.getElementById('formProductCategory').value.trim();
+      const isMedicine = selectedCategory === 'Medicine';
+      const chosenLocation = isMedicine 
+        ? document.getElementById('formLocationPreset').value 
+        : document.getElementById('formLocationManual').value.trim() || 'General Storage';
+
+      const payload = {
+        name: document.getElementById('formProductName').value.trim(),
+        category: selectedCategory,
+        location: chosenLocation,
+        barcode: document.getElementById('formProductBarcode').value.trim(),
+        mfg_date: document.getElementById('formMfgDate').value,
+        expiry_date: document.getElementById('formExpiryDate').value,
+      };
+
+      try {
+        const res = await fetch(`${API_BASE}/api/inventory/add`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${currentToken}`
+          },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await res.json();
+        if (data.success) {
+          showAlert('success', 'Inventory Updated!', `"${payload.name}" saved! Instant confirmation email sent to ${currentUser.email}.`);
+          loadUserInventory();
+
+          // Reset preview form
+          document.getElementById('inventoryForm').classList.add('hidden');
+          document.getElementById('productEmptyPlaceholder').classList.remove('hidden');
+          document.getElementById('lookupStatusBadge').textContent = 'Saved Successfully';
+          document.getElementById('lookupStatusBadge').className = 'text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-600';
+        } else {
+          showAlert('error', 'Save Failed', data.message || 'Could not save product.');
+        }
+      } catch (err) {
+        showAlert('error', 'Request Error', err.message);
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = `
+          <span class="material-symbols-outlined text-[18px]">add_circle</span>
+          Add to My Inventory
+        `;
+      }
+    };
+
+    // ================= 8. INVENTORY TABLE LOADER =================
+    const loadUserInventory = async () => {
+      const container = document.getElementById('inventoryListContainer');
+      if (!currentToken) {
+        container.innerHTML = `
+          <div class="py-8 text-center bg-slate-50 rounded-xl border border-slate-200">
+            <span class="material-symbols-outlined text-slate-400 text-[32px] mb-1">lock</span>
+            <p class="text-xs font-semibold text-slate-600">Please sign in to view your stored inventory</p>
+            <button onclick="openAuthModal('login')" class="mt-2 text-xs font-bold text-brand-600 hover:underline">Click here to sign in</button>
+          </div>
+        `;
+        return;
+      }
+
+      try {
+        const res = await fetch(`${API_BASE}/api/inventory`, {
+          headers: { 'Authorization': `Bearer ${currentToken}` }
+        });
+        const data = await res.json();
+
+        if (data.success && data.products) {
+          if (data.products.length === 0) {
+            container.innerHTML = `
+              <div class="py-8 text-center text-slate-400">
+                <span class="material-symbols-outlined text-[36px] text-slate-300 mb-1">inventory</span>
+                <p class="text-xs">Your inventory is currently empty. Scan and add items above!</p>
+              </div>
+            `;
+            return;
+          }
+
+          const now = Date.now();
+          const rows = data.products.map((p) => {
+            const expDate = new Date(p.expiry_date);
+            const diffHours = (expDate.getTime() - now) / (1000 * 60 * 60);
+
+            let badgeHtml = '';
+            if (diffHours <= 0) {
+              badgeHtml = '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-red-100 text-red-700">EXPIRED</span>';
+            } else if (diffHours <= 24) {
+              badgeHtml = `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-red-50 text-red-600 border border-red-200">Expires Today (${Math.round(diffHours)}h)</span>`;
+            } else if (diffHours <= 72) {
+              badgeHtml = `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-50 text-amber-600 border border-amber-200">Urgent (${Math.round(diffHours / 24)}d)</span>`;
+            } else {
+              badgeHtml = `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-50 text-brand-600 border border-blue-100">Stable (${Math.round(diffHours / 24)}d)</span>`;
+            }
+
+            return `
+              <tr class="border-b border-slate-100 hover:bg-slate-50/60 text-xs transition">
+                <td class="py-3 px-4 font-semibold text-slate-900">${p.name}</td>
+                <td class="py-3 px-4 text-slate-600">${p.category || '-'}</td>
+                <td class="py-3 px-4 font-mono text-slate-500">${p.barcode || '-'}</td>
+                <td class="py-3 px-4 text-slate-700">${expDate.toLocaleDateString()} ${expDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</td>
+                <td class="py-3 px-4">${badgeHtml}</td>
+                <td class="py-3 px-4 text-right">
+                  <button onclick="handleDeleteProduct(${p.id})" title="Delete" class="text-slate-400 hover:text-red-600 p-1 rounded transition">
+                    <span class="material-symbols-outlined text-[16px]">delete</span>
+                  </button>
+                </td>
+              </tr>
+            `;
+          }).join('');
+
+          container.innerHTML = `
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="border-b border-slate-200 text-[11px] font-bold text-slate-400 uppercase tracking-wider bg-slate-50/50">
+                  <th class="py-2.5 px-4">Product Name</th>
+                  <th class="py-2.5 px-4">Category</th>
+                  <th class="py-2.5 px-4">Barcode</th>
+                  <th class="py-2.5 px-4">Expiry Date</th>
+                  <th class="py-2.5 px-4">Status</th>
+                  <th class="py-2.5 px-4 text-right">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${rows}
+              </tbody>
+            </table>
+          `;
+        }
+      } catch (e) {
+        container.innerHTML = `<p class="text-xs text-red-500 py-4 text-center">Failed to load inventory: ${e.message}</p>`;
+      }
+    };
+
+    const handleDeleteProduct = async (id) => {
+      if (!confirm('Are you sure you want to remove this product from inventory?')) return;
+      try {
+        const res = await fetch(`${API_BASE}/api/inventory/${id}`, {
+          method: 'DELETE',
+          headers: { 'Authorization': `Bearer ${currentToken}` }
+        });
+        const data = await res.json();
+        if (data.success) {
+          showAlert('info', 'Item Removed', data.message);
+          loadUserInventory();
+        }
+      } catch (err) {
+        showAlert('error', 'Delete Failed', err.message);
+      }
+    };
+
+    // ================= 9. UI ALERTS =================
+    const showAlert = (type, title, message) => {
+      const banner = document.getElementById('alertBanner');
+      const icon = document.getElementById('alertIcon');
+      const t = document.getElementById('alertTitle');
+      const m = document.getElementById('alertMessage');
+
+      t.textContent = title;
+      m.textContent = message;
+
+      if (type === 'success') {
+        banner.className = 'max-w-3xl mx-auto mb-6 p-4 rounded-xl border border-emerald-200 bg-emerald-50 text-emerald-900 flex items-start gap-3 shadow-xs';
+        icon.textContent = 'check_circle';
+        icon.className = 'material-symbols-outlined text-emerald-600 text-[20px] shrink-0 mt-0.5';
+      } else if (type === 'error') {
+        banner.className = 'max-w-3xl mx-auto mb-6 p-4 rounded-xl border border-red-200 bg-red-50 text-red-900 flex items-start gap-3 shadow-xs';
+        icon.textContent = 'error';
+        icon.className = 'material-symbols-outlined text-red-600 text-[20px] shrink-0 mt-0.5';
+      } else if (type === 'warning') {
+        banner.className = 'max-w-3xl mx-auto mb-6 p-4 rounded-xl border border-amber-200 bg-amber-50 text-amber-900 flex items-start gap-3 shadow-xs';
+        icon.textContent = 'warning';
+        icon.className = 'material-symbols-outlined text-amber-600 text-[20px] shrink-0 mt-0.5';
+      } else {
+        banner.className = 'max-w-3xl mx-auto mb-6 p-4 rounded-xl border border-blue-200 bg-blue-50 text-blue-900 flex items-start gap-3 shadow-xs';
+        icon.textContent = 'info';
+        icon.className = 'material-symbols-outlined text-blue-600 text-[20px] shrink-0 mt-0.5';
+      }
+
+      banner.classList.remove('hidden');
+    };
+
+    const hideAlert = () => {
+      document.getElementById('alertBanner').classList.add('hidden');
+    };
+
+    // Boot
+    window.addEventListener('DOMContentLoaded', () => {
+      initDefaultDates();
+      checkUserSession();
+    });
+  </script>
+</body>
+</html>
