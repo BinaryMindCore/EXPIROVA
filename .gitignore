@@ -13,6 +13,8 @@ node_modules/
 dist/
 **/dist/
 dist-ssr/
+build/
+**/build/
 *.local
 
 # Editor directories and OS files
@@ -30,6 +32,8 @@ Thumbs.db
 # Environment variables (keep templates only)
 .env
 .env.*
+.env.local
+**/.env.local
 *.env
 *.env.*
 **/.env
