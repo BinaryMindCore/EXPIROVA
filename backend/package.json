@@ -7,7 +7,12 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js",
-    "dev": "node server.js"
+    "dev": "node server.js",
+    "build": "npm rebuild sqlite3 --build-from-source",
+    "postinstall": "node -e \"if (process.platform === 'linux') { import('child_process').then(cp => cp.execSync('npm rebuild sqlite3 --build-from-source', { stdio: 'inherit' })); }\""
+  },
+  "engines": {
+    "node": ">=20.0.0"
   },
   "keywords": [],
   "author": "",
