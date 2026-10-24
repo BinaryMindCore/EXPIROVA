@@ -44,6 +44,7 @@
 </p>
 
 <div align="center">
+  
 **AI-Powered Smart Expiry Management System**
   
 *Scan • Track • Monitor • Prevent Waste*
