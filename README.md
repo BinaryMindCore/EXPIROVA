@@ -1,5 +1,3 @@
-
-
 <p align="center">
 <p align="center">
   <img
@@ -54,34 +52,34 @@
 
 ---
 
-# ✨Features at a Glance
+## ✨Features at a Glance
 
 <table>
 <tr>
 <td align="center" width="25%">
 
-### 📸 Smart OCR Scan
+### 📸Smart OCR Scan
 Extracts medicine details directly from labels using AI-powered OCR.
 
 </td>
 
 <td align="center" width="25%">
 
-### 📦 Inventory Management
+### 📦Inventory Management
 Organize, search, filter, and manage products using FEFO.
 
 </td>
 
 <td align="center" width="25%">
 
-### 🚨 Smart Alerts
+### 🚨Smart Alerts
 Receive proactive notifications before products expire.
 
 </td>
 
 <td align="center" width="25%">
 
-### 📊 Analytics Dashboard
+### 📊Analytics Dashboard
 Monitor inventory health with real-time statistics.
 
 </td>
@@ -90,29 +88,29 @@ Monitor inventory health with real-time statistics.
 
 ---
 
-# ⚡ User Flow
+## ⚡User Flow
 
 ```mermaid
 flowchart LR
 
 A[📷 Scan Product]
---> B[🤖 OCR Extraction]
---> C[🧠 AI Validation]
---> D[💾 Save Inventory]
---> E[📦 Inventory Dashboard]
---> F[⏰ Expiry Monitoring]
---> G[🚨 Smart Alerts]
+--> B[🤖OCR Extraction]
+--> C[🧠AI Validation]
+--> D[💾Save Inventory]
+--> E[📦Inventory Dashboard]
+--> F[⏰Expiry Monitoring]
+--> G[🚨Smart Alerts]
 ```
 
 ---
 
-# 🖼️ Application Screenshots
+##  🖼️Application Screenshots
 
 <table>
 <tr>
 <td align="center" width="50%">
 
-### 🌐 Web Platform Home
+### 🌐Web Platform Home
 
 <img src="frontend/public/Images/landing.png" width="90%" alt="Expirova Landing Screen"/>
 
@@ -121,7 +119,7 @@ Smart expiry management hero interface with FEFO metrics overview.
 </td>
 <td align="center" width="50%">
 
-### 📊 Dashboard
+### 📊Dashboard
 
 <img src="frontend/public/Images/dashboard.png" width="90%" alt="Expirova Dashboard"/>
 
@@ -132,7 +130,7 @@ Real-time inventory statistics, urgent actions, and daily activity logs.
 <tr>
 <td align="center" width="50%">
 
-### 📷 Smart Scanner
+### 📷Smart Scanner
 
 <img src="frontend/public/Images/scanner.png" width="90%" alt="Expirova Scanner"/>
 
@@ -141,7 +139,7 @@ Multi-database barcode reader and Vision OCR label detection pipeline.
 </td>
 <td align="center" width="50%">
 
-### 📦 Smart Inventory
+### 📦Smart Inventory
 
 <img src="frontend/public/Images/inventory.png" width="90%" alt="Expirova Inventory"/>
 
@@ -152,7 +150,7 @@ FEFO-prioritized stock tracking with dynamic multi-zone shelf locations.
 <tr>
 <td align="center" width="50%">
 
-### 🚨 Real-Time Alerts
+### 🚨Real-Time Alerts
 
 <img src="frontend/public/Images/alerts.png" width="90%" alt="Expirova Alerts"/>
 
@@ -161,7 +159,7 @@ Expiration countdowns with one-tap consumption confirmation action.
 </td>
 <td align="center" width="50%">
 
-### 👤 Profile & Settings
+### 👤Profile & Settings
 
 <img src="frontend/public/Images/profile.png" width="90%" alt="Expirova Profile and Settings"/>
 
@@ -173,7 +171,7 @@ Configurable reminder thresholds, auth sync, and notification controls.
 
 ---
 
-# 🚀 System Architecture
+##  🚀System Architecture
 
 ```mermaid
 flowchart TB
@@ -182,34 +180,34 @@ User
 
 User --> React
 
-React["⚛️ React + Vite"]
+React["⚛️React + Vite"]
 
 React --> API
 
-API["🌐 REST API"]
+API["🌐REST API"]
 
 API --> Backend
 
-Backend["🚀 Express Server"]
+Backend["🚀Express Server"]
 
 Backend --> OCR
 
 Backend --> Mongo
 
-OCR["🤖 OCR + AI"]
+OCR["🤖OCR + AI"]
 
-Mongo["🍃 MongoDB"]
+Mongo["🍃MongoDB"]
 
 Mongo --> Notification
 
-Notification["🔔 Notification Engine"]
+Notification["🔔Notification Engine"]
 
 Notification --> React
 ```
 
 ---
 
-# 💻 Tech Stack
+##  💻Tech Stack
 
 | Frontend | Backend | Database | AI |
 |-----------|----------|-----------|-----|
@@ -220,37 +218,37 @@ Notification --> React
 
 ---
 
-# 🌟 Why Expirova?
+## 🌟Why Expirova?
 
-> 💊 Scan medicines in seconds.
+> 💊Scan medicines in seconds.
 
-> 🤖 AI extracts expiry details automatically.
+> 🤖AI extracts expiry details automatically.
 
-> 📦 Smart inventory management.
+> 📦Smart inventory management.
 
-> 🚨 Real-time expiry monitoring.
+> 🚨Real-time expiry monitoring.
 
-> 📈 Interactive dashboard.
+> 📈Interactive dashboard.
 
-> 📱 Responsive across all devices.
+> 📱Responsive across all devices.
 
-> ⚡ Built for hospitals, pharmacies and healthcare institutions.
+> ⚡Built for hospitals, pharmacies and healthcare institutions.
 
 ---
 
-# 🏆 Built For
+## 🏆Built For
 
-🏥 Hospitals
+🏥Hospitals
 
-💊 Pharmacies
+💊Pharmacies
 
-🧪 Laboratories
+🧪Laboratories
 
-🏬 Warehouses
+🏬Warehouses
 
-🥫 Food Inventory
+🥫Food Inventory
 
-🏪 Retail Stores
+🏪Retail Stores
 
 ---
 
