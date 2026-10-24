@@ -54,7 +54,7 @@
 
 ---
 
-# ✨ Features at a Glance
+# ✨Features at a Glance
 
 <table>
 <tr>
