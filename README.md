@@ -110,7 +110,7 @@ A[📷 Scan Product]
 
 ### 🌐 Web Platform Home
 <p align="center">
-  <img src="frontend/src/home.png" width="100%" alt="Expirova Web Platform Landing Page" />
+  <img src="frontend/public/Images/landing.png" width="100%" alt="Expirova Web Platform Landing Page" />
 </p>
 <p align="center"><em>Smart expiry management landing interface showcasing FEFO compliance, fast AI scanning metrics, and unified inventory workflows[cite: 13].</em></p>
 
@@ -123,9 +123,9 @@ A[📷 Scan Product]
 
 ### 📊 Dashboard
 
-<img src="frontend/src/dashboard.png" width="100%" alt="Dashboard Screenshot"/>
+<img src="frontend/public/Images/dashboard.png" width="100%" alt="Dashboard Screenshot"/>
 
-Real-time inventory overview, analytics, quick actions and recent scans[cite: 14].
+Real-time inventory overview, analytics, quick actions and recent scans.
 
 </td>
 
@@ -133,9 +133,9 @@ Real-time inventory overview, analytics, quick actions and recent scans[cite: 14
 
 ### 📷 Smart Scanner
 
-<img src="frontend/src/scanner.png" width="100%" alt="Smart Scanner Screenshot"/>
+<img src="frontend/public/Images/scanner.png" width="100%" alt="Smart Scanner Screenshot"/>
 
-Capture medicine labels and extract expiry information automatically[cite: 15].
+Capture packaging labels and extract expiry information automatically.
 
 </td>
 
@@ -147,9 +147,9 @@ Capture medicine labels and extract expiry information automatically[cite: 15].
 
 ### 📦 Inventory
 
-<img src="frontend/src/inventory.png" width="100%" alt="Inventory Screenshot"/>
+<img src="frontend/public/Images/inventory.png" width="100%" alt="Inventory Screenshot"/>
 
-Search, filter, categorize and manage inventory using FEFO[cite: 16].
+Search, filter, categorize and manage inventory using FEFO.
 
 </td>
 
@@ -157,9 +157,9 @@ Search, filter, categorize and manage inventory using FEFO[cite: 16].
 
 ### 🚨 Alerts
 
-<img src="frontend/src/alerts.png" width="100%" alt="Alerts Screenshot"/>
+<img src="frontend/public/Images/alerts.png" width="100%" alt="Alerts Screenshot"/>
 
-Automatically highlights products requiring immediate attention[cite: 17].
+Automatically highlights products requiring immediate attention.
 
 </td>
 
@@ -171,15 +171,16 @@ Automatically highlights products requiring immediate attention[cite: 17].
 
 ### 👤 Profile & Settings
 
-<img src="frontend/src/profile.png" width="75%" alt="Profile and Settings Screenshot"/>
+<img src="frontend/public/Images/profile.png" width="75%" alt="Profile and Settings Screenshot"/>
 
-Manage organization details, reminders, notification preferences and profile settings[cite: 1].
+Manage organization details, reminders, notification preferences and profile settings.
 
 </td>
 
 </tr>
 
 </table>
+
 ---
 
 # 🚀 System Architecture
