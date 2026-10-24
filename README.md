@@ -108,77 +108,67 @@ A[📷 Scan Product]
 
 # 🖼️ Application Screenshots
 
-### 🌐 Web Platform Home
-<p align="center">
-  <img src="frontend/public/Images/landing.png" width="100%" alt="Expirova Web Platform Landing Page" />
-</p>
-<p align="center"><em>Smart expiry management landing interface showcasing FEFO compliance, fast AI scanning metrics, and unified inventory workflows[cite: 13].</em></p>
-
-<br />
-
 <table>
 <tr>
+<td align="center" width="50%">
 
+### 🌐 Web Platform Home
+
+<img src="frontend/public/Images/landing.png" width="90%" alt="Expirova Landing Screen"/>
+
+Smart expiry management hero interface with FEFO metrics overview.
+
+</td>
 <td align="center" width="50%">
 
 ### 📊 Dashboard
 
-<img src="frontend/public/Images/dashboard.png" width="100%" alt="Dashboard Screenshot"/>
+<img src="frontend/public/Images/dashboard.png" width="90%" alt="Expirova Dashboard"/>
 
-Real-time inventory overview, analytics, quick actions and recent scans.
+Real-time inventory statistics, urgent actions, and daily activity logs.
 
 </td>
-
+</tr>
+<tr>
 <td align="center" width="50%">
 
 ### 📷 Smart Scanner
 
-<img src="frontend/public/Images/scanner.png" width="100%" alt="Smart Scanner Screenshot"/>
+<img src="frontend/public/Images/scanner.png" width="90%" alt="Expirova Scanner"/>
 
-Capture packaging labels and extract expiry information automatically.
+Multi-database barcode reader and Vision OCR label detection pipeline.
 
 </td>
-
-</tr>
-
-<tr>
-
 <td align="center" width="50%">
 
-### 📦 Inventory
+### 📦 Smart Inventory
 
-<img src="frontend/public/Images/inventory.png" width="100%" alt="Inventory Screenshot"/>
+<img src="frontend/public/Images/inventory.png" width="90%" alt="Expirova Inventory"/>
 
-Search, filter, categorize and manage inventory using FEFO.
+FEFO-prioritized stock tracking with dynamic multi-zone shelf locations.
 
 </td>
-
+</tr>
+<tr>
 <td align="center" width="50%">
 
-### 🚨 Alerts
+### 🚨 Real-Time Alerts
 
-<img src="frontend/public/Images/alerts.png" width="100%" alt="Alerts Screenshot"/>
+<img src="frontend/public/Images/alerts.png" width="90%" alt="Expirova Alerts"/>
 
-Automatically highlights products requiring immediate attention.
+Expiration countdowns with one-tap consumption confirmation action.
 
 </td>
-
-</tr>
-
-<tr>
-
-<td colspan="2" align="center">
+<td align="center" width="50%">
 
 ### 👤 Profile & Settings
 
-<img src="frontend/public/Images/profile.png" width="75%" alt="Profile and Settings Screenshot"/>
+<img src="frontend/public/Images/profile.png" width="90%" alt="Expirova Profile and Settings"/>
 
-Manage organization details, reminders, notification preferences and profile settings.
+Configurable reminder thresholds, auth sync, and notification controls.
 
 </td>
-
 </tr>
-
 </table>
 
 ---
