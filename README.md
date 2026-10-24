@@ -254,10 +254,6 @@ Notification --> React
 
 ---
 
-<div align="center">
-
-## ⭐ If you like Expirova, consider giving this repository a star!
-
 <p align="center">
   <img
     width="100%"
