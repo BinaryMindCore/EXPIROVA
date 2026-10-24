@@ -1,10 +1,11 @@
 <p align="center">
-<p align="center">
-  <img
-    width="100%"
-    src="https://capsule-render.vercel.app/api?type=waving&height=180&color=0d5f94&text=Expirova&fontColor=ffffff&fontSize=55&fontAlignY=40&animation=fadeIn"
-  />
-</p>
+<div align="center" style="width: 100%;">
+  <img
+    src="https://capsule-render.vercel.app/api?type=waving&height=180&color=0d5f94&text=Expirova&fontColor=ffffff&fontSize=55&fontAlignY=40&animation=fadeIn"
+    width="100%"
+    alt="Expirova Banner"
+  />
+</div>
 
 <p align="center">
 
@@ -252,12 +253,13 @@ Notification --> React
 
 ---
 
-<p align="center">
-  <img
-    width="100%"
-    src="https://capsule-render.vercel.app/api?type=waving&color=0d5f94&height=100&section=footer"
-  />
-</p>
+<div align="center" style="width: 100%;">
+  <img
+    src="https://capsule-render.vercel.app/api?type=waving&color=0d5f94&height=100&section=footer"
+    width="100%"
+    alt="Expirova Footer"
+  />
+</div>
 
 </div>
  
