@@ -221,25 +221,25 @@ Notification --> React
 
 ## 🌟 Why Expirova?
 
-* 💊 **Rapid Multimodal Scanning** — Identifies items and extracts expiry dates in seconds[cite: 20].
-* 🤖 **Automated Vision AI** — Neural OCR accurately captures packaging text without manual entry[cite: 20].
-* 📦 **FEFO Inventory Control** — Automatically prioritizes stock using First-Expired, First-Out sorting[cite: 20].
-* 🚨 **Proactive Expiry Alerts** — Real-time monitoring with customizable early-warning cadences[cite: 20].
-* 📈 **Live Operations Dashboard** — Actionable telemetry on managed stock, urgent items, and consumption[cite: 20].
-* 📱 **Fully Responsive** — Seamlessly accessible on mobile devices, tablets, and desktop workstations[cite: 20].
-* ⚡ **Enterprise & Household Ready** — Engineered for clinics, pharmacies, pantries, and homes[cite: 20].
+* 💊 **Rapid Multimodal Scanning** — Identifies items and extracts expiry dates in seconds.
+* 🤖 **Automated Vision AI** — Neural OCR accurately captures packaging text without manual entry.
+* 📦 **FEFO Inventory Control** — Automatically prioritizes stock using First-Expired, First-Out sorting.
+* 🚨 **Proactive Expiry Alerts** — Real-time monitoring with customizable early-warning cadences.
+* 📈 **Live Operations Dashboard** — Actionable telemetry on managed stock, urgent items, and consumption.
+* 📱 **Fully Responsive** — Seamlessly accessible on mobile devices, tablets, and desktop workstations.
+* ⚡ **Enterprise & Household Ready** — Engineered for clinics, pharmacies, pantries, and homes.
 
 ---
 
 ## 🏆 Built For
 
-* 🏥 **Hospitals & Clinics** — Surgical packs, vaccines, and diagnostic kits[cite: 20]
-* 💊 **Pharmacies** — Batch control, regulated drugs, and shelf audits[cite: 20]
-* 🧪 **Laboratories** — Chemical reagents, test solutions, and cold chains[cite: 20]
-* 🏬 **Warehouses & Logistics** — Large-scale stock turnover and inventory health[cite: 20]
-* 🥫 **Pantry & Food Services** — Fresh produce, dairy, and packaged perishables[cite: 20]
-* 🏪 **Retail Stores** — Front-shelf expiry tracking and reduced write-offs[cite: 20]
-
+* 🏥 **Hospitals & Clinics** — Surgical packs, vaccines, and diagnostic kits
+* 💊 **Pharmacies** — Batch control, regulated drugs, and shelf audits
+* 🧪 **Laboratories** — Chemical reagents, test solutions, and cold chains
+* 🏬 **Warehouses & Logistics** — Large-scale stock turnover and inventory health
+* 🥫 **Pantry & Food Services** — Fresh produce, dairy, and packaged perishables
+* 🏪 **Retail Stores** — Front-shelf expiry tracking and reduced write-offs
+  
 ---
 
 <div align="center" style="width: 100%;">
