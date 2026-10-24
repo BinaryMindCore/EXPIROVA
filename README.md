@@ -53,6 +53,18 @@
 
 ---
 
+## 💻Why Expirova?
+
+* 💊 **Rapid Multimodal Scanning** — Identifies items and extracts expiry dates in seconds.
+* 🤖 **Automated Vision AI** — Neural OCR accurately captures packaging text without manual entry.
+* 📦 **FEFO Inventory Control** — Automatically prioritizes stock using First-Expired, First-Out sorting.
+* 🚨 **Proactive Expiry Alerts** — Real-time monitoring with customizable early-warning cadences.
+* 📈 **Live Operations Dashboard** — Actionable telemetry on managed stock, urgent items, and consumption.
+* 📱 **Fully Responsive** — Seamlessly accessible on mobile devices, tablets, and desktop workstations.
+* ⚡ **Enterprise & Household Ready** — Engineered for clinics, pharmacies, pantries, and homes.
+
+---
+
 ## ✨Features at a Glance
 
 <table>
@@ -208,28 +220,20 @@ Notification --> React
 
 ---
 
-##  💻Tech Stack
+## 💻 Tech Stack
 
-| Frontend | Backend | Database | AI |
-|-----------|----------|-----------|-----|
-| React | Node.js | MongoDB | OCR |
-| Vite | Express | Mongoose | AI Parsing |
-| Tailwind CSS | JWT | Atlas | OpenCV |
-| React Router | REST APIs | | |
-
----
-
-## 🌟 Why Expirova?
-
-* 💊 **Rapid Multimodal Scanning** — Identifies items and extracts expiry dates in seconds.
-* 🤖 **Automated Vision AI** — Neural OCR accurately captures packaging text without manual entry.
-* 📦 **FEFO Inventory Control** — Automatically prioritizes stock using First-Expired, First-Out sorting.
-* 🚨 **Proactive Expiry Alerts** — Real-time monitoring with customizable early-warning cadences.
-* 📈 **Live Operations Dashboard** — Actionable telemetry on managed stock, urgent items, and consumption.
-* 📱 **Fully Responsive** — Seamlessly accessible on mobile devices, tablets, and desktop workstations.
-* ⚡ **Enterprise & Household Ready** — Engineered for clinics, pharmacies, pantries, and homes.
+| Layer | Primary Technologies | Capabilities & Tooling |
+| :--- | :--- | :--- |
+| **Frontend** | React 18, Vite | Tailwind CSS, Lucide Icons, React Router |
+| **Backend** | Node.js, Express.js | REST APIs, JWT, Multer, Axios |
+| **Database & Auth** | Supabase (PostgreSQL) | Row Level Security (RLS), Supabase Auth, Realtime Engine |
+| **AI & Vision** | Google Gemini Vision API | Multimodal OCR, Packaging Label Parsing, EXP Extraction |
+| **External Registries** | Open Food Facts API | Open Beauty Facts API, Barcode Lookup Services |
+| **Deployment** | Vercel (Frontend) | Render (Backend), Git / GitHub CI |
 
 ---
+
+
 
 ## 🏆 Built For
 
