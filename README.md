@@ -108,26 +108,34 @@ A[📷 Scan Product]
 
 # 🖼️ Application Screenshots
 
+### 🌐 Web Platform Home
+<p align="center">
+  <img src="frontend/src/home.png" width="100%" alt="Expirova Web Platform Landing Page" />
+</p>
+<p align="center"><em>Smart expiry management landing interface showcasing FEFO compliance, fast AI scanning metrics, and unified inventory workflows[cite: 13].</em></p>
+
+<br />
+
 <table>
 <tr>
 
-<td align="center">
+<td align="center" width="50%">
 
 ### 📊 Dashboard
 
-<img src="images/dashboard.png" width="100%"/>
+<img src="frontend/src/dashboard.png" width="100%" alt="Dashboard Screenshot"/>
 
-Real-time inventory overview, analytics, quick actions and recent scans.
+Real-time inventory overview, analytics, quick actions and recent scans[cite: 14].
 
 </td>
 
-<td align="center">
+<td align="center" width="50%">
 
 ### 📷 Smart Scanner
 
-<img src="images/scanner.png" width="100%"/>
+<img src="frontend/src/scanner.png" width="100%" alt="Smart Scanner Screenshot"/>
 
-Capture medicine labels and extract expiry information automatically.
+Capture medicine labels and extract expiry information automatically[cite: 15].
 
 </td>
 
@@ -135,23 +143,23 @@ Capture medicine labels and extract expiry information automatically.
 
 <tr>
 
-<td align="center">
+<td align="center" width="50%">
 
 ### 📦 Inventory
 
-<img src="frontend/public/images/inventory.png" width="100%"/>
+<img src="frontend/src/inventory.png" width="100%" alt="Inventory Screenshot"/>
 
-Search, filter, categorize and manage inventory using FEFO.
+Search, filter, categorize and manage inventory using FEFO[cite: 16].
 
 </td>
 
-<td align="center">
+<td align="center" width="50%">
 
 ### 🚨 Alerts
 
-<img src="images/alerts.png" width="100%"/>
+<img src="frontend/src/alerts.png" width="100%" alt="Alerts Screenshot"/>
 
-Automatically highlights products requiring immediate attention.
+Automatically highlights products requiring immediate attention[cite: 17].
 
 </td>
 
@@ -163,16 +171,15 @@ Automatically highlights products requiring immediate attention.
 
 ### 👤 Profile & Settings
 
-<img src="images/profile.png" width="75%"/>
+<img src="frontend/src/profile.png" width="75%" alt="Profile and Settings Screenshot"/>
 
-Manage organization details, reminders, notification preferences and profile settings.
+Manage organization details, reminders, notification preferences and profile settings[cite: 1].
 
 </td>
 
 </tr>
 
 </table>
-
 ---
 
 # 🚀 System Architecture
