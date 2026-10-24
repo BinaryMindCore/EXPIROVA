@@ -219,37 +219,24 @@ Notification --> React
 
 ---
 
-## 🌟Why Expirova?
-
-> 💊Scan medicines in seconds.
-
-> 🤖AI extracts expiry details automatically.
-
-> 📦Smart inventory management.
-
-> 🚨Real-time expiry monitoring.
-
-> 📈Interactive dashboard.
-
-> 📱Responsive across all devices.
-
-> ⚡Built for hospitals, pharmacies and healthcare institutions.
+## 🌟 Why Expirova?
+> 💊 **Rapid Multimodal Scanning** — Identifies items and extracts expiry dates in seconds.
+> 🤖 **Automated Vision AI** — Neural OCR accurately captures packaging text without manual entry.
+> 📦 **FEFO Inventory Control** — Automatically prioritizes stock using First-Expired, First-Out sorting.
+> 🚨 **Proactive Expiry Alerts** — Real-time monitoring with customizable early-warning cadences.
+> 📈 **Live Operations Dashboard** — Actionable telemetry on managed stock, urgent items, and consumption.
+> 📱 **Fully Responsive** — Seamlessly accessible on mobile devices, tablets, and desktop workstations.
+> ⚡ **Enterprise & Household Ready** — Engineered for clinics, pharmacies, pantries, and homes.
 
 ---
 
-## 🏆Built For
-
-🏥Hospitals
-
-💊Pharmacies
-
-🧪Laboratories
-
-🏬Warehouses
-
-🥫Food Inventory
-
-🏪Retail Stores
+## 🏆 Built For
+🏥 **Hospitals & Clinics** — Surgical packs, vaccines, and diagnostic kits
+💊 **Pharmacies** — Batch control, regulated drugs, and shelf audits
+🧪 **Laboratories** — Chemical reagents, test solutions, and cold chains
+🏬 **Warehouses & Logistics** — Large-scale stock turnover and inventory health
+🥫 **Pantry & Food Services** — Fresh produce, dairy, and packaged perishables
+🏪 **Retail Stores** — Front-shelf expiry tracking and reduced write-offs
 
 ---
 
